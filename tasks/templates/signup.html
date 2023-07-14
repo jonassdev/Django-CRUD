@@ -1,10 +1,14 @@
-<h1>Signup</h1>
-<br><br>
-<form action="/signup/" method="POST">
-    {% csrf_token %}
-    {{ response }}
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>Signup</h1>
     <br><br>
-    {{ form.as_p }}
-    
-    <button>Signup</button>
-</form>
+    <form action="/signup/" method="POST">
+        {% csrf_token %}
+        {{ response }}
+        <br><br>
+        {{ form.as_p }}
+        
+        <button>Signup</button>
+    </form>
+{% endblock %}
