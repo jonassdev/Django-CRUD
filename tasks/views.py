@@ -1,6 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth import login
+
+from django.db import IntegrityError
+
 from django.http import HttpResponse, HttpResponseServerError
 
 
@@ -24,11 +29,9 @@ def signup(request):
                 user = User.objects.create_user(
                     username=request.POST['username'], password=request.POST['password1'])
                 user.save()
-                return render(request, 'signup.html', {
-                    'response': 'Usuario registrado correctamente',
-                    'form': UserCreationForm
-                })
-            except:
+                login(request, user)
+                return redirect('tasks')
+            except IntegrityError:
                 return render(request, 'signup.html', {
                     'response': 'Usuario Ya Existe',
                     'form': UserCreationForm
@@ -43,3 +46,6 @@ def signup(request):
         return render(request, 'signup.html', {
             'form': UserCreationForm
         })
+
+def tasks(request):
+    return render(request, 'tasks.html')
