@@ -48,15 +48,13 @@ def signup(request):
             'form': UserCreationForm
         })
 
-# cerrar sesion
-
+# cerrar sesion (logout - signout)
 
 def signout(request):
     logout(request)
     return redirect('home')
 
-# permite iniciar sesion con cuentas ya creadas
-
+# permite iniciar sesion con cuentas ya creadas (signin)
 
 def signin(request):
     # Metodo GET
@@ -65,6 +63,7 @@ def signin(request):
         return render(request, 'signin.html', {
             'form': AuthenticationForm
         })
+    # Metodo POST
     else:
         user = authenticate(
             request, username=request.POST['username'], password=request.POST['password'])
@@ -75,8 +74,7 @@ def signin(request):
                 'error': 'Usuario o contraseña es incorrecto'
             })
         else:
-            # Informacion del Usuario. Guarda la sesion
-            
+            # Informacion del Usuario. Guarda e inicia la sesion
             login(request, user)
             return redirect('tasks')
 
