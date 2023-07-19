@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from .forms import TaskForm, TaskDetailForm
 from .models import Tasks
 
+from django.utils import timezone
 
 # Create your views here.
 
@@ -128,3 +129,17 @@ def task_detail(request, task_id):
             'form' : form,
             'error' : 'Error al Actualizar Datos'
         })
+            
+def complete_task(request, task_id):
+    task = get_object_or_404(Tasks, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.datecompleted = timezone.now()
+        task.save()
+        return redirect('tasks')
+
+def delete_task(request, task_id):
+    task = get_object_or_404(Tasks, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        
+        task.delete()
+        return redirect('tasks')
