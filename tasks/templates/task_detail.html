@@ -5,12 +5,13 @@
 <h1>Task Detail</h1>
 <br><br>
 
-{{ task }}
-    <!-- <form action="" method="POST">
+<h3 style="color: red;">{{ task }}</h3><br><br>
+{{ error }}
+    <form action="" method="POST">
         {{ form.as_p }}
         {% csrf_token %}
 
-        <button>Send</button>
-    </form> -->
+        <button>Update</button>
+    </form>
 
 {% endblock %}
