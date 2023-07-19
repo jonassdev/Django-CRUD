@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
@@ -8,7 +8,7 @@ from django.db import IntegrityError
 
 from django.http import HttpResponse, HttpResponseServerError
 
-from .forms import TaskForm
+from .forms import TaskForm, TaskDetailForm
 from .models import Tasks
 
 
@@ -106,3 +106,11 @@ def create_task(request):
             return render(request, 'create_task.html', {
                 'form' : TaskForm
             })
+            
+def task_detail(request, task_id):
+    if request.method == 'GET':
+        task = get_object_or_404(Tasks, pk=task_id)
+        return render(request, 'task_detail.html',{
+            'task' : task
+        })
+    
