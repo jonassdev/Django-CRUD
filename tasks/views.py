@@ -84,10 +84,19 @@ def signin(request):
 
 
 def tasks(request):
-    tasks = Tasks.objects.filter(user=request.user)
+    tasks = Tasks.objects.filter(user=request.user, datecompleted__isnull=True)
 
     return render(request, 'tasks.html', {
-        'tasks': tasks
+        'tasks': tasks,
+        'tag' : 'Pending'
+    })
+
+def tasks_completed(request):
+    tasks = Tasks.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
+    return render(request, 'tasks.html', {
+        'tasks': tasks,
+        'tag' : 'All'
+        
     })
 
 def create_task(request):
@@ -139,7 +148,6 @@ def complete_task(request, task_id):
 
 def delete_task(request, task_id):
     task = get_object_or_404(Tasks, pk=task_id, user=request.user)
-    if request.method == 'POST':
-        
+    if request.method == 'POST':        
         task.delete()
         return redirect('tasks')
