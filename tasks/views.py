@@ -8,10 +8,12 @@ from django.db import IntegrityError
 
 from django.http import HttpResponse, HttpResponseServerError
 
-from .forms import TaskForm, TaskDetailForm
+from .forms import TaskForm
 from .models import Tasks
 
 from django.utils import timezone
+
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -20,8 +22,6 @@ def home(request):
     return render(request, 'home.html')
 
 # Crear cuenta nueva
-
-
 def signup(request):
     # Metodo POST
     if request.method == "POST":
@@ -51,15 +51,8 @@ def signup(request):
         return render(request, 'signup.html', {
             'form': UserCreationForm
         })
-
-# cerrar sesion (logout - signout)
-
-def signout(request):
-    logout(request)
-    return redirect('home')
-
+    
 # permite iniciar sesion con cuentas ya creadas (signin)
-
 def signin(request):
     # Metodo GET
 
@@ -82,23 +75,32 @@ def signin(request):
             login(request, user)
             return redirect('tasks')
 
+# cerrar sesion (logout - signout)
+@login_required
+def signout(request):
+    logout(request)
+    return redirect('home')
 
+
+@login_required
 def tasks(request):
     tasks = Tasks.objects.filter(user=request.user, datecompleted__isnull=True)
-
     return render(request, 'tasks.html', {
         'tasks': tasks,
         'tag' : 'Pending'
     })
 
+@login_required
 def tasks_completed(request):
     tasks = Tasks.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
+    show_datecompleted_column = any(task.datecompleted is not None for task in tasks)
     return render(request, 'tasks.html', {
         'tasks': tasks,
-        'tag' : 'All'
-        
+        'tag' : 'All',
+        'show_datecompleted_column': show_datecompleted_column
     })
 
+@login_required
 def create_task(request):
     if request.method == 'GET':
         return render(request, 'create_task.html', {
@@ -117,6 +119,7 @@ def create_task(request):
                 'form' : TaskForm
             })
             
+@login_required          
 def task_detail(request, task_id):
     if request.method == 'GET':
         task = get_object_or_404(Tasks, pk=task_id, user=request.user)
@@ -139,6 +142,7 @@ def task_detail(request, task_id):
             'error' : 'Error al Actualizar Datos'
         })
             
+@login_required           
 def complete_task(request, task_id):
     task = get_object_or_404(Tasks, pk=task_id, user=request.user)
     if request.method == 'POST':
@@ -146,6 +150,7 @@ def complete_task(request, task_id):
         task.save()
         return redirect('tasks')
 
+@login_required
 def delete_task(request, task_id):
     task = get_object_or_404(Tasks, pk=task_id, user=request.user)
     if request.method == 'POST':        

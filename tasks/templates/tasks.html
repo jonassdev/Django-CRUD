@@ -2,22 +2,53 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Tasks ({{ tag }})</h1>
-<ul>
-    {% for task in tasks %}
-        <a href="{% url 'task_detail' task.id %}">
-            {% if task.important == True %}
-                <strong> {{task.title}} </strong>
-            {% else %}
-                <li>{{task.title}}</li>
-            {% endif %}
-                <p> {{ task.user.username }} </p>
-                <p> {{ task.description }} </p>
-                <p> {{task.datecompleted|date:'M j Y:i'}} </p>
+<main class="container">
 
-        </a>
-        
-    {% endfor %}
-</ul>
+    
+    <div class="row">
+
+        <div class="col-md-8 offset-md-2">
+            <h1 class="text-center display-3 py-5">Tasks ({{ tag }})</h1>
+
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">N° Tarea</th>
+                    <th scope="col" class="fw-bold text-success">Titulo</th>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">Usuario</th>
+                    {% if show_datecompleted_column %}
+                    <th scope="col">Completada en</th>
+                    {% endif %}
+                    <th scope="col">Editar</th>
+                  </tr>
+                </thead>
+                {% for task in tasks %}
+                <tbody>
+                  <tr>
+                    <th scope="row"> {{task.id}} </th>
+                    <td>{{task.title}}</td>
+                    <td>{{ task.description }}</td>
+                    <td>{{ task.user.username }}</td>
+                    {% if task.datecompleted %}
+                    <td>{{task.datecompleted|date:'M j Y:i'}}</td>
+                    {% endif %}
+                    <td>
+                        <a href="{% url 'task_detail' task.id %}">
+                            <button class="btn btn-success" >Editar</button>
+                        </a>
+                    </td>
+                  </tr>       
+                </tbody>
+                {% endfor %}
+
+              </table>
+
+        </div>
+    </div>
+</main>
+
+
+
 
 {% endblock %}
